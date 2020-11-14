@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import com.example.demo.models.Serie;
 import com.example.demo.repositories.SerieRepository;
@@ -32,8 +33,12 @@ public class SerieResource {
 	
 	@PostMapping
 	public ResponseEntity<Serie> save(@RequestBody Serie serie){
-		serieRepository.save(serie);
-		return new ResponseEntity<>(serie, HttpStatus.OK);
+		try {
+			serieRepository.save(serie);
+			return new ResponseEntity<Serie>(HttpStatus.OK);
+		}catch(NoSuchElementException nsee) {
+			return new ResponseEntity<Serie>(HttpStatus.NOT_FOUND);
+		}	
 	}
 	
 	@GetMapping 
@@ -75,5 +80,13 @@ public class SerieResource {
 				return ResponseEntity.ok().body(serieUpdated);
 			}).orElse(ResponseEntity.notFound().build());
 	
+	}
+	
+	@GetMapping(path ="/search/{term}") 
+	public ResponseEntity<String> getBySearch(@PathVariable String term){
+	    final String uri = "http://api.tvmaze.com/search/shows?q="+term;
+	    RestTemplate restTemplate = new RestTemplate();
+	    String result = restTemplate.getForObject(uri, String.class);
+	    return ResponseEntity.ok().body(result);
 	}
 }

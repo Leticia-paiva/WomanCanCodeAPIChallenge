@@ -32,11 +32,14 @@ public class Serie {
 	}
 	
 	public int getId() {
-		return id;}
+		return id;
+	}
 	public String getName() {
-		return name;}
+		return name;
+	}
 	public int getYear() {
-		return year;}
+		return year;
+	}
 	public int getTotalSeasons() {
 		return totalSeasons;
 	}
@@ -51,7 +54,8 @@ public class Serie {
 		this.totalSeasons = totalSeasons;
 	}
 	
+	@Override
 	public String toString() {
-		return name;}
-	
+		return "Serie [id=" + id + ", Name=" + name + ", Year=" + year + ", totalSeasons=" + totalSeasons + "]";
+	}
 }

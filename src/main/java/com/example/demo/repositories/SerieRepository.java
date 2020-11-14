@@ -6,5 +6,5 @@ import com.example.demo.models.Serie;
 
 @Repository
 public interface SerieRepository extends JpaRepository<Serie, Integer> {
-
+	public Serie findByName(String name);
 }
