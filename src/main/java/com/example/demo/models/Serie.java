@@ -52,6 +52,9 @@ public class Serie {
 	}
 	public void setTotalSeasons(int totalSeasons) {
 		this.totalSeasons = totalSeasons;
+	}	
+	public void setId(int id) {
+		this.id = id;
 	}
 	
 	@Override

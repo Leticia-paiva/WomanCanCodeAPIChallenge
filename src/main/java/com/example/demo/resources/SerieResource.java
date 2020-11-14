@@ -1,9 +1,16 @@
 package com.example.demo.resources;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import org.json.*;
+
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -83,10 +90,35 @@ public class SerieResource {
 	}
 	
 	@GetMapping(path ="/search/{term}") 
-	public ResponseEntity<String> getBySearch(@PathVariable String term){
-	    final String uri = "http://api.tvmaze.com/search/shows?q="+term;
+	public ResponseEntity<List<Serie>> getBySearch(@PathVariable String term){
+	    final String showSearchUrl = "http://api.tvmaze.com/search/shows?q="+term;
 	    RestTemplate restTemplate = new RestTemplate();
-	    String result = restTemplate.getForObject(uri, String.class);
-	    return ResponseEntity.ok().body(result);
+	    String result = restTemplate.getForObject(showSearchUrl, String.class);
+	    JSONArray jsonShowResults = new JSONArray(result);
+	    List <Serie> series = new ArrayList<Serie>();
+	    for(int i = 0; i<jsonShowResults.length(); i++){
+	    	JSONObject obj = jsonShowResults.getJSONObject(i);
+	    	Serie serie = new Serie();
+	    	serie.setName(obj.getJSONObject("show").getString("name"));
+	    	if (!obj.getJSONObject("show").isNull("premiered")) {
+		    	String dateString = obj.getJSONObject("show").getString("premiered");
+		        Date date;
+				try {
+					date = new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
+					LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+			        serie.setYear(localDate.getYear());
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+	    	}
+	    	final String seasonSearchUrl = "http://api.tvmaze.com/shows/"+
+	    			obj.getJSONObject("show").getInt("id")+"/seasons";
+	    	String result2 = restTemplate.getForObject(seasonSearchUrl, String.class);
+	    	JSONArray jsonSeasonResults = new JSONArray(result2);
+	        serie.setTotalSeasons(jsonSeasonResults.length());
+	        serie.setId(i);
+	        series.add(serie);
+	    }
+	    return new ResponseEntity<>(series, HttpStatus.OK);
 	}
 }
