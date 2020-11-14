@@ -51,6 +51,7 @@ docker run -p 8080:8080 alelochallenge
 ```
 ## Swagger documentation
 
+https://app.swaggerhub.com/apis/Leticia-paiva/AleloChallengeAPI/1.0.0
 
 ## Setup
 Java 14
