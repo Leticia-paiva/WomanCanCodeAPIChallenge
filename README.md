@@ -4,7 +4,7 @@ API created as a final project for the java back-end bootcamp
 
 ## Tv Series Collection API
 
-The aplication is a REST API that save a collection of series, with the name, the year and the number of seasons of each serie.
+The aplication is a API that save a collection of series, with the name, the year and the number of seasons of each serie.
 
 
 ## The aplication has those endpoints:
