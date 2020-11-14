@@ -2,6 +2,7 @@ package com.example.demo.testingweb;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -34,9 +35,21 @@ public class TestingWebApplicationTest {
 	@Test
     public void testGetSeries() throws Exception {
     	Serie newSerie = repo.save(new Serie("Chaves",1971,2)); 
+    	Serie newSerie1= repo.save(new Serie("New Girl",2011,7));
+    	Serie newSerie2= repo.save(new Serie("New Girl",2011,7));
     	Serie [] series = this.restTemplate
     			.getForObject("http://localhost:" + port + "/serie",Serie[].class);
     	assertThat(newSerie).isEqualToComparingFieldByField(series[0]);	
+    	assertThat(newSerie1).isEqualToComparingFieldByField(series[1]);	
+    	assertThat(newSerie2).isEqualToComparingFieldByField(series[2]);
+	} 
+	
+	@Test
+    public void testGetSerieById() throws Exception {
+    	Serie newSerie = repo.save(new Serie("Chaves",1971,2)); 
+    	Serie series = this.restTemplate
+    			.getForObject("http://localhost:" + port + "/serie/"+newSerie.getId(),Serie.class);
+    	assertThat(newSerie).isEqualToComparingFieldByField(series);	
 	} 
 	
 	@Test
@@ -68,5 +81,20 @@ public class TestingWebApplicationTest {
     	series = (List<Serie>) repo.findAll();
     	assertThat(series).isEmpty();
 	} 
-	
+
+	@Test
+    public void testSearchSeries() throws Exception {
+		String nameSerie = "mom";
+		List<Serie> listSeries = new ArrayList<Serie>();
+		listSeries.add(new Serie("Mom",2013,8));
+		listSeries.add(new Serie("Mom",2015,1));
+		listSeries.add(new Serie("Instant Mom",2013,3));
+		listSeries.add(new Serie("Teen Mom 2",2011,10));
+		Serie [] series = this.restTemplate
+    			.getForObject("http://localhost:" + port + "/serie/search/"+nameSerie,Serie[].class);
+    	for (int i=0; i<listSeries.size();i++) {   
+    		listSeries.get(i).setId(i);
+		assertThat(listSeries.get(i)).isEqualToComparingFieldByField(series[i]);   	
+    	} 
+	}
 }

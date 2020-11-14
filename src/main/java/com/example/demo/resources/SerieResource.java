@@ -92,6 +92,7 @@ public class SerieResource {
 	@GetMapping(path ="/search/{term}") 
 	public ResponseEntity<List<Serie>> getBySearch(@PathVariable String term){
 	    final String showSearchUrl = "http://api.tvmaze.com/search/shows?q="+term;
+	    try {
 	    RestTemplate restTemplate = new RestTemplate();
 	    String result = restTemplate.getForObject(showSearchUrl, String.class);
 	    JSONArray jsonShowResults = new JSONArray(result);
@@ -117,8 +118,12 @@ public class SerieResource {
 	    	JSONArray jsonSeasonResults = new JSONArray(result2);
 	        serie.setTotalSeasons(jsonSeasonResults.length());
 	        serie.setId(i);
-	        series.add(serie);
-	    }
-	    return new ResponseEntity<>(series, HttpStatus.OK);
+	        series.add(serie);   
+	    }	
+	    	return new ResponseEntity<>(series, HttpStatus.OK);
+	    }catch(NoSuchElementException nsee) {
+			return new ResponseEntity<List<Serie>>(HttpStatus.NOT_FOUND);
+		}
+	   
 	}
 }
